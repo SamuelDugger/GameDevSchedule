@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3f4f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1218" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dev Plan">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+<title>Game Dev Rotation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: header and settings, a stat strip, a week-by-track rotation map, a short weekly plan, then the course list with progress sliders. */
+:root {
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --surface-2: #e9ecf1;
+  --ink: #141a24;
+  --ink-2: #444e5f;
+  --ink-3: #66707f;
+  --line: #d8dce4;
+  --accent: #2a4fd4;
+  --accent-soft: #e2e8fc;
+  --t-godot: #3b7fd4;
+  --t-art3d: #e07a1f;
+  --t-ui: #d9438e;
+  --t-design: #c99a06;
+  --t-audio: #2e9e5b;
+  --f-display: 'Schibsted Grotesk', system-ui, sans-serif;
+  --f-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1218; --surface: #161b23; --surface-2: #1f2530; --ink: #e8ebf0; --ink-2: #b0b8c5; --ink-3: #8c96a5;
+    --line: #2a3240; --accent: #86a2ff; --accent-soft: #1d2744;
+    --t-godot: #6aa4f0; --t-art3d: #f2a04f; --t-ui: #f07db4; --t-design: #eac84a; --t-audio: #55c785;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1218; --surface: #161b23; --surface-2: #1f2530; --ink: #e8ebf0; --ink-2: #b0b8c5; --ink-3: #8c96a5;
+  --line: #2a3240; --accent: #86a2ff; --accent-soft: #1d2744;
+  --t-godot: #6aa4f0; --t-art3d: #f2a04f; --t-ui: #f07db4; --t-design: #eac84a; --t-audio: #55c785;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 72px;
+  display: flex; flex-direction: column; gap: 36px;
+}
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5.5vw, 3.1rem); font-weight: 800; line-height: 1.05; }
+h2 { font-size: 1.35rem; font-weight: 700; }
+h3 { font-size: 1rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+.eyebrow, .mono-label {
+  font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+}
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.top-text { display: flex; flex-direction: column; gap: 10px; max-width: 64ch; min-width: 0; }
+.lede { color: var(--ink-2); font-size: 1.02rem; }
+.top-side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 0; }
+.save { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); padding-top: 6px; text-align: right; }
+.linkbox { width: min(100%, 360px); }
+.linkbox input { width: 100%; font: inherit; font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px 18px; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label:not(.check) { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+select, input[type="date"] {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 0; width: 100%;
+}
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 0.9rem; color: var(--ink-2); }
+.check input { margin-top: 3px; accent-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); border-block: 1px solid var(--line); }
+.stat { padding: 16px 16px 16px 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stat + .stat { padding-left: 16px; }
+.stat-val { font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat-sub { color: var(--ink-3); font-size: 0.85rem; }
+@media (max-width: 560px) {
+  .stats { grid-template-columns: 1fr 1fr; column-gap: 16px; }
+  .stat, .stat + .stat { padding: 12px 0; border-top: 1px solid var(--line); }
+  .stat:nth-child(-n+2) { border-top: 0; }
+  .stat-val { font-size: 1.5rem; }
+}
+
+.sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.sec-note { color: var(--ink-2); max-width: 70ch; font-size: 0.93rem; }
+
+/* rotation map */
+.map-scroll { overflow-x: auto; padding-bottom: 6px; }
+.map { --cw: 18px; display: flex; flex-direction: column; gap: 3px; width: max-content; min-width: 100%; }
+.mrow { display: grid; grid-template-columns: 8rem repeat(var(--n), minmax(var(--cw), 1fr)); gap: 2px; align-items: center; }
+.mlabel { position: sticky; left: 0; background: var(--surface); z-index: 1; display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 500; padding-right: 6px; height: 22px; }
+.dot { width: 9px; height: 9px; border-radius: 2px; background: var(--tc); flex: none; }
+.cell { height: 22px; border-radius: 2px; background: var(--surface-2); position: relative; }
+.cell.on { background: var(--tc); }
+.cell.nowcol { outline: 1px solid var(--accent); outline-offset: 1px; }
+.mhead .wk { font-family: var(--f-mono); font-size: 0.62rem; color: var(--ink-3); text-align: left; overflow: visible; white-space: nowrap; height: 14px; }
+.mhead .wk.now { color: var(--accent); font-weight: 600; }
+
+/* weekly plan */
+.weeks { display: flex; flex-direction: column; gap: 12px; }
+.week.now { border-color: var(--accent); }
+.week-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.week-head .range { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-3); }
+.pill { font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
+.pill.now { background: var(--accent-soft); color: var(--accent); }
+.week-head .spacer { flex: 1; }
+.week-head .tot { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-2); }
+.slots { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.slot { display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; border-left: 4px solid var(--tc); padding: 6px 0 6px 12px; background: color-mix(in srgb, var(--tc) 8%, var(--surface)); border-radius: 0 8px 8px 0; }
+.slot .tn { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); }
+.slot .ct { min-width: 0; overflow-wrap: anywhere; }
+.slot .mt { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-2); padding-right: 10px; white-space: nowrap; }
+@media (max-width: 600px) {
+  .slot { grid-template-columns: minmax(0, 1fr) auto; }
+  .slot .tn { grid-column: 1 / -1; }
+}
+.btn { font: inherit; font-size: 0.88rem; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* courses */
+.tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 14px; }
+.track { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.track-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.track-head .th-h { margin-left: auto; font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); }
+.course { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 6px 14px; align-items: start; padding: 10px 0 10px 12px; border-left: 4px solid var(--tc); background: var(--surface); border-radius: 0 8px 8px 0; margin-bottom: 4px; }
+.course.done .c-title { color: var(--ink-3); text-decoration: line-through; }
+.c-title { font-weight: 600; overflow-wrap: anywhere; }
+.c-meta { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); margin-top: 2px; overflow-wrap: anywhere; }
+.c-why { color: var(--ink-2); font-size: 0.86rem; margin-top: 4px; max-width: 60ch; }
+.tag { font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-left: 6px; vertical-align: 1px; display: inline-block; }
+.tag.alt { background: var(--surface-2); color: var(--ink-2); }
+.c-prog { display: flex; align-items: center; gap: 8px; padding-right: 10px; }
+.c-prog input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.c-prog output { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-2); width: 3.2ch; text-align: right; }
+@media (max-width: 460px) { .course { grid-template-columns: minmax(0, 1fr); } }
+
+/* cut list */
+details.cut { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+details.cut summary { cursor: pointer; font-family: var(--f-display); font-weight: 700; }
+.cut-group { margin-top: 12px; }
+.cut-group b { font-weight: 600; }
+.cut-group p { color: var(--ink-2); font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-text">
+      <p class="eyebrow">Study plan · 3D game development</p>
+      <h1>Game Dev Rotation</h1>
+      <p class="lede">The courses that matter most for building 3D, multiplayer, systems-heavy games: Godot, Blender, UI and game design. Every week rotates through several tracks so nothing goes cold, and beginner courses come before intermediate ones within each track.</p>
+    </div>
+    <div class="top-side">
+      <div class="save" id="saveState" role="status" aria-live="polite"></div>
+      <button class="btn" id="syncBtn" type="button" hidden>Copy sync link</button>
+      <div class="linkbox" id="linkBox" hidden><input id="linkInput" readonly aria-label="Sync link"></div>
+    </div>
+  </header>
+
+  <section class="panel controls" aria-label="Plan settings">
+    <div class="field"><label for="f-start">Start date</label><input type="date" id="f-start"></div>
+    <div class="field"><label for="f-hpw">Hours per week</label>
+      <select id="f-hpw"><option>8</option><option>10</option><option>12</option><option>15</option><option value="17.5">17.5</option><option>20</option><option>25</option></select></div>
+    <div class="field"><label for="f-mult">Pace</label>
+      <select id="f-mult">
+        <option value="1">Video length only (×1)</option>
+        <option value="1.25">Developer pace (×1.25)</option>
+        <option value="1.5">Following along (×1.5)</option>
+        <option value="2">Slow and thorough (×2)</option>
+      </select></div>
+    <div class="field">
+      <label class="check" for="f-ext"><input type="checkbox" id="f-ext"><span id="l-ext">Add optional extras</span></label>
+      <label class="check" for="f-art"><input type="checkbox" id="f-art"><span id="l-art">A teammate handles 3D art (skip Blender)</span></label>
+    </div>
+  </section>
+
+  <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Rotation map</h2><span class="mono-label">one column per week · brighter = more hours</span></div>
+    <p class="sec-note">Each row is a track. Godot and Blender show up almost every week; smaller tracks come back every week or two. A few courses wait for a prerequisite, such as the Godot UI course, which starts once you are about 60% through Godot 3D.</p>
+    <div class="panel"><div class="map-scroll"><div class="map" id="map"></div></div></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Weekly plan</h2><button class="btn" id="toggleWeeks" type="button"></button></div>
+    <p class="sec-note">Hours are planned hours, including practice. Percentages are how far into each course you should be at the end of that block. Start each block with a 10-minute redo of the last lesson in that track.</p>
+    <div class="weeks" id="weeks"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Courses and progress</h2><span class="mono-label">drag a slider as you go</span></div>
+    <p class="sec-note">Fell behind or finished something early? Move the sliders, set the start date to this Monday, and the schedule rebuilds from where you are. Items tagged Added are free or paid resources I found to fill gaps in your list.</p>
+    <div id="courses" class="tracks-grid"></div>
+  </section>
+
+  <section class="sec">
+    <details class="cut">
+      <summary>Cut from this plan (74.5 h of your courses)</summary>
+      <div class="cut-group"><b>2D courses: 31 h</b><p>Complete Godot 4 2D, Godot 4 2D Action-Adventure, and all three pixel art courses. These are 3D games. If the 3D course feels too fast at the start, do the first few hours of Godot 2D.</p></div>
+      <div class="cut-group"><b>Blender specialties: 25.5 h</b><p>Simulation Nodes, Isometric Scenes and Hard Surface Modelling. They add polish but are not needed to build a game.</p></div>
+      <div class="cut-group"><b>Anime Character Creator: 10.5 h</b><p>Character Creator for Video Games already covers the character pipeline.</p></div>
+      <div class="cut-group"><b>Music production: 7.5 h</b><p>Wait until you have a game that needs a soundtrack. SFX stays in the plan.</p></div>
+      <div class="cut-group"><b>Optional extras: 39.5 h</b><p>Low Poly Landscapes, Skill Builder Modelling Challenges, Geometry Nodes and Material Nodes Mastery. They are off by default. Turn on the extras switch to add them.</p></div>
+      <div class="cut-group"><b>Also cut from my earlier plans</b><p>Git basics (you know them), Figma, Steam marketing, math part 4, the capstone game, the Grafit UI art course and the prototype spikes.</p></div>
+    </details>
+  </section>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var fmt = function (h) { var r = Math.round(h * 10) / 10; return r % 1 ? r.toFixed(1) : String(r); };
+  var DAY = 86400000, EPS = 1e-6;
+  var parseD = function (s) { var p = s.split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]); };
+  var fmtD = function (t, o) { return new Date(t).toLocaleDateString('en-US', Object.assign({ month: 'short', day: 'numeric', timeZone: 'UTC' }, o || {})); };
+  var fmtRange = function (a, b) {
+    var A = new Date(a), B = new Date(b);
+    return A.getUTCMonth() === B.getUTCMonth() ? fmtD(a) + '–' + B.getUTCDate() : fmtD(a) + ' – ' + fmtD(b);
+  };
+  var IN_CLAUDE = !!(window.claude && window.claude.use);
+
+  /* ---------- data ---------- */
+  var TRACKS = [
+    { id: 'godot', name: 'Godot', boost: 1.4 },
+    { id: 'art3d', name: '3D Art' },
+    { id: 'ui', name: 'UI / UX' },
+    { id: 'design', name: 'Design & Code' },
+    { id: 'audio', name: 'Audio' }
+  ];
+  var TIE = ['godot', 'art3d', 'ui', 'design', 'audio'];
+  var TBY = {}; TRACKS.forEach(function (t) { TBY[t.id] = t; });
+
+  var L = function (label, url) { return { label: label, url: url }; };
+  var D = function (id, pct) { return { id: id, pct: pct || 100 }; };
+  function own(id, track, ord, title, hrs, why, extra) {
+    return Object.assign({ id: id, track: track, ord: ord, title: title, hrs: hrs, src: 'Owned', why: why }, extra || {});
+  }
+  function add(id, track, ord, title, hrs, src, links, why, extra) {
+    return Object.assign({ id: id, track: track, ord: ord, title: title, hrs: hrs, src: src, links: links, why: why, added: true }, extra || {});
+  }
+
+  var COURSES = [
+    /* Godot */
+    own('g_3d', 'godot', 1, 'Complete Godot 3D: Code Your Own 3D Games', 20, 'Your foundation: movement, cameras, scenes and GDScript in 3D. As a working developer you can likely run the videos faster than normal. If the opening feels too fast, do the first few hours of the Godot 2D course.'),
+    own('g_multi', 'godot', 2, 'Godot 4 Multiplayer: Make Your Own Online Game', 8, 'Online and co-op play. Learn the networking model before you build anything that has to sync between players.'),
+    own('g_rpg', 'godot', 3, 'Godot 4: Build an Action Combat RPG', 17.5, 'Combat, stats, gear and levelling in 3D, the backbone of most RPGs. Most sources call this course 3D, but one listing says 2D, so check the curriculum before you start.'),
+    own('g_shader', 'godot', 4, 'Godot 4 Shaders: Craft Stunning Visuals', 5, 'Stylized looks, outlines and hit effects.'),
+    own('g_plug', 'godot', 5, 'Godot 4: Create and Master Custom Plugins', 1.5, 'Editor tools that speed up a small team, such as custom data editors.'),
+    /* 3D art */
+    own('b_start', 'art3d', 1, 'Get Started With Blender', 2, 'Two hours to get comfortable in the Blender interface.'),
+    own('b_creator', 'art3d', 2, 'Complete Blender Creator 3: 3D Modelling for Beginners', 14, 'The full modelling foundation. Do it before the character course.'),
+    own('b_skill', 'art3d', 2.5, 'Blender Skill Builder: Modelling Challenges', 6.5, 'Extra modelling practice if you want more reps.', { extra: true }),
+    own('b_char', 'art3d', 3, 'Blender Character Creator for Video Games', 17, 'Game-ready characters and creatures. The core character art course.'),
+    own('b_tex', 'art3d', 4, 'Blender Texture Painting: Stylized Models', 6.5, 'Stylized texture painting so models look finished.'),
+    own('i_anim', 'art3d', 5, 'Blender Animation and Rigging', 8, 'Rigging and animation for characters and creatures.'),
+    own('b_pipe', 'art3d', 6, 'From Blender to Godot: Game-Ready Assets, Characters and Animation', 3, 'Gets models, rigs and animations into Godot cleanly. Starts once you are about 60% through Godot 3D.', { after: [D('g_3d', 60)] }),
+    own('b_low', 'art3d', 6.5, 'Blender Low Poly Landscapes: Model Your Own Stylized Landscapes', 6, 'Stylized terrain and landscapes for open worlds and farms.', { extra: true }),
+    own('b_env', 'art3d', 7, 'Blender Environment Artist: Create 3D Worlds', 14.5, 'Builds full 3D environments such as interiors, towns and farms.'),
+    own('i_mat', 'art3d', 8, 'Blender Material Nodes Mastery: Create Spectacular Textures', 16.5, 'Deeper material building for a polished stylized look.', { extra: true }),
+    own('i_geo', 'art3d', 9, 'Geometry Nodes in Blender 4: Create Complex 3D Models', 10.5, 'Procedural tools for scattering props and foliage.', { extra: true }),
+    /* UI */
+    add('u_db', 'ui', 1, 'Game UI Database: study inventory, shop and management menus', 2, 'Free', [L('Open', 'https://www.gameuidatabase.com/')], 'A free reference of tens of thousands of game screens. Collect examples before you design your own menus. Time is a rough guess.', { est: true }),
+    add('u_godotui', 'ui', 2, 'Master Godot UI: Interfaces with Control Nodes (Udemy)', 4, 'Paid, about $20', [L('Open', 'https://comidoc.com/udemy/godot-ui')], 'Control nodes, containers and themes. Simulation and RPG games are menu-heavy. Udemy price varies, so check it. Starts once you are about 60% through Godot 3D.', { after: [D('g_3d', 60)] }),
+    add('u_ux', 'ui', 3, 'User Experience in Game Design (Coursera, Epic Games)', 9.5, 'Free or trial', [L('Open', 'https://www.coursera.org/learn/user-experience-in-game-design')], 'Player experience, onboarding and feedback. Coursera may limit free access, so check the enrollment page.'),
+    /* Design and code */
+    add('c_pat', 'design', 1, 'Game Programming Patterns (free book), selected chapters', 4, 'Free', [L('Open', 'https://gameprogrammingpatterns.com/')], 'The Command, State and Observer patterns keep larger projects organized. Time is a rough guess.', { est: true }),
+    add('d_theory', 'design', 2, 'Systems design talks: core loops, economy and tuning (GDC, Game Maker’s Toolkit)', 4, 'Free', [L('GDC Vault', 'https://gdcvault.com/')], 'The design side of simulation and collecting games: loops, economy and tuning. Time is a rough guess.', { est: true }),
+    own('d_level', 'design', 3, 'Level Design Fundamentals', 4.5, 'Layout and flow for interiors and worlds.'),
+    add('c_math1', 'design', 4, 'Math for Game Devs, Part 1: Vectors and Dot Product', 3, 'Free', [L('Open', 'https://classcentral.com/course/youtube-vectors-dot-product-math-for-game-devs-part-1-129127')], 'Vectors drive steering, aiming and distance falloff.'),
+    /* Audio */
+    own('a_sfx', 'audio', 1, 'Game Audio Essentials: SFX and Sound Design', 6.5, 'Sound effects and sound design for creatures and interfaces.')
+  ];
+  var CBY = {}; COURSES.forEach(function (c) { CBY[c.id] = c; });
+
+  /* ---------- state ---------- */
+  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, extras: false, noArt: false, progress: {} };
+  var LS = 'gdr-state-v2';
+  var state = clone(DEFAULTS);
+  var showAll = false, importedFromLink = false;
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function normalize(d) {
+    var s = clone(DEFAULTS);
+    if (!d || typeof d !== 'object') return s;
+    if (typeof d.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.start)) s.start = d.start;
+    if (+d.hpw >= 2 && +d.hpw <= 60) s.hpw = +d.hpw;
+    if (+d.mult >= 1 && +d.mult <= 3) s.mult = +d.mult;
+    if (typeof d.extras === 'boolean') s.extras = d.extras;
+    if (typeof d.noArt === 'boolean') s.noArt = d.noArt;
+    if (d.progress && typeof d.progress === 'object') {
+      Object.keys(d.progress).forEach(function (k) { var v = +d.progress[k]; if (CBY[k] && v >= 0 && v <= 100) s.progress[k] = v; });
+    }
+    return s;
+  }
+  function b64enc(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function b64dec(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+  try { var raw = localStorage.getItem(LS); if (raw) state = normalize(JSON.parse(raw)); } catch (e) {}
+  try {
+    var hm = location.hash.match(/^#s=([A-Za-z0-9_-]+)$/);
+    if (hm && !IN_CLAUDE) {
+      state = normalize(JSON.parse(b64dec(hm[1]))); importedFromLink = true;
+      try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {}
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  } catch (e) {}
+
+  /* ---------- scheduling engine ---------- */
+  function isOn(c, st) {
+    if (c.extra && !st.extras) return false;
+    if (c.track === 'art3d' && st.noArt) return false;
+    return true;
+  }
+  function planH(c, st) { return c.hrs * st.mult; }
+
+  function buildPlan(st) {
+    var blocks = [], left = st.hpw;
+    while (left >= 2 - 1e-9) { blocks.push(2); left -= 2; }
+    if (left > 1e-9) blocks.push(left);
+    var wk = 0, bp = 0;
+    function nextBlock() { if (bp >= blocks.length) { wk++; bp = 0; } return { week: wk, len: blocks[bp++] }; }
+
+    var pct = {};
+    COURSES.forEach(function (c) { pct[c.id] = isOn(c, st) ? Math.min(100, st.progress[c.id] || 0) : 100; });
+    var tr = TIE.map(function (id) {
+      var q = COURSES.filter(function (c) { return c.track === id && isOn(c, st); })
+        .sort(function (a, b) { return a.ord - b.ord; })
+        .map(function (c) { var tot = planH(c, st); return { c: c, tot: tot, rem: tot * (1 - pct[c.id] / 100) }; })
+        .filter(function (x) { return x.rem > EPS; });
+      var t = { id: id, q: q, pass: 0, blocked: false };
+      t.rem = function () { return t.q.reduce(function (s, x) { return s + x.rem; }, 0); };
+      t.weight = t.rem() * (TBY[id].boost || 1);
+      return t;
+    }).filter(function (t) { return t.q.length; });
+
+    function ready(t) { return (t.q[0].c.after || []).every(function (a) { return pct[a.id] >= a.pct - 1e-9; }); }
+    var raw = [], guard = 0;
+
+    while (tr.some(function (t) { return t.rem() > EPS; }) && guard++ < 6000) {
+      var b = nextBlock(), blockLeft = b.len;
+      while (blockLeft > EPS) {
+        var live = tr.filter(function (t) { return t.rem() > EPS; });
+        if (!live.length) break;
+        var elig = live.filter(ready);
+        live.forEach(function (t) {
+          var isE = elig.indexOf(t) >= 0;
+          if (isE && t.blocked) {
+            var others = elig.filter(function (x) { return x !== t && !x.blocked; });
+            if (others.length) t.pass = Math.max(t.pass, Math.min.apply(null, others.map(function (x) { return x.pass; })));
+          }
+          t.blocked = !isE;
+        });
+        if (!elig.length) elig = live;
+        var pick = elig[0];
+        elig.forEach(function (t) { if (t.pass < pick.pass - 1e-12) pick = t; });
+        var it = pick.q[0], take = Math.min(blockLeft, it.rem);
+        var from = (it.tot - it.rem) / it.tot * 100;
+        it.rem -= take;
+        var fin = it.rem <= EPS;
+        var to = fin ? 100 : (it.tot - it.rem) / it.tot * 100;
+        pct[it.c.id] = to;
+        raw.push({ week: b.week, track: pick.id, cid: it.c.id, hours: take, from: from, to: to });
+        if (fin) pick.q.shift();
+        pick.pass += take / pick.weight;
+        blockLeft -= take;
+      }
+    }
+
+    var merged = [], idx = {};
+    raw.forEach(function (s) {
+      var k = s.week + '|' + s.cid;
+      if (idx[k] != null) { var m = merged[idx[k]]; m.hours += s.hours; m.from = Math.min(m.from, s.from); m.to = Math.max(m.to, s.to); }
+      else { idx[k] = merged.length; merged.push({ week: s.week, track: s.track, cid: s.cid, hours: s.hours, from: s.from, to: s.to }); }
+    });
+    var n = merged.length ? merged[merged.length - 1].week + 1 : 0;
+    return { sessions: merged, nWeeks: n };
+  }
+
+  /* ---------- render ---------- */
+  var plan = null;
+  function startT() { return parseD(state.start); }
+  function weekStart(w) { return startT() + w * 7 * DAY; }
+  function todayWeek() {
+    var d = new Date(), t = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+    return Math.floor((t - startT()) / (7 * DAY));
+  }
+
+  function renderStats() {
+    var on = COURSES.filter(function (c) { return isOn(c, state); });
+    var video = on.reduce(function (s, c) { return s + c.hrs; }, 0);
+    var total = on.reduce(function (s, c) { return s + planH(c, state); }, 0);
+    var remaining = plan.sessions.reduce(function (s, x) { return s + x.hours; }, 0);
+    var finish = plan.nWeeks ? weekStart(plan.nWeeks - 1) + 6 * DAY : null;
+    var tiles = [
+      ['Course video', fmt(video) + ' h', on.length + ' courses in this plan'],
+      ['Planned time', fmt(total) + ' h', fmt(video) + ' h × ' + state.mult + ' · ' + fmt(remaining) + ' h left'],
+      ['Calendar', plan.nWeeks + ' weeks', '≈ ' + (plan.nWeeks / 4.345).toFixed(1) + ' months at ' + fmt(state.hpw) + ' h per week'],
+      ['Finish date', finish ? fmtD(finish) : '—', finish ? new Date(finish).getUTCFullYear() + ' · add buffer weeks for life' : 'Everything is done']
+    ];
+    $('#stats').innerHTML = tiles.map(function (t) {
+      return '<div class="stat"><span class="mono-label">' + t[0] + '</span><span class="stat-val">' + t[1] + '</span><span class="stat-sub">' + t[2] + '</span></div>';
+    }).join('');
+  }
+
+  function renderMap() {
+    var n = plan.nWeeks, cur = todayWeek();
+    var heat = {};
+    plan.sessions.forEach(function (s) { var r = heat[s.track] = heat[s.track] || {}; r[s.week] = (r[s.week] || 0) + s.hours; });
+    var html = '<div class="mrow mhead" style="--n:' + n + '"><span></span>';
+    for (var w = 0; w < n; w++) html += '<span class="wk' + (w === cur ? ' now' : '') + '">' + ((w % 4 === 0) ? (w + 1) : '') + '</span>';
+    html += '</div>';
+    TRACKS.forEach(function (t) {
+      var row = heat[t.id];
+      if (!row) return;
+      html += '<div class="mrow" style="--n:' + n + ';--tc:var(--t-' + t.id + ')"><span class="mlabel"><i class="dot"></i>' + esc(t.name) + '</span>';
+      for (var w = 0; w < n; w++) {
+        var h = row[w] || 0;
+        var a = h ? Math.min(1, 0.32 + 0.68 * h / 4) : 0;
+        var cls = 'cell' + (h ? ' on' : '') + (w === cur ? ' nowcol' : '');
+        html += '<span class="' + cls + '"' + (h ? ' style="opacity:' + a.toFixed(2) + '"' : '') + ' title="Week ' + (w + 1) + (h ? ': ' + fmt(h) + ' h' : '') + '"></span>';
+      }
+      html += '</div>';
+    });
+    $('#map').innerHTML = html;
+  }
+
+  function renderWeeks() {
+    var n = plan.nWeeks, cur = todayWeek();
+    var first = Math.max(0, Math.min(cur, n - 1)), last = showAll ? n : Math.min(n, first + 4);
+    var from = showAll ? 0 : first;
+    var byWeek = {};
+    plan.sessions.forEach(function (s) { (byWeek[s.week] = byWeek[s.week] || []).push(s); });
+    var out = '';
+    for (var w = from; w < last; w++) {
+      var ss = byWeek[w] || [];
+      var tot = ss.reduce(function (a, s) { return a + s.hours; }, 0);
+      var a = weekStart(w);
+      out += '<article class="panel week' + (w === cur ? ' now' : '') + '"><div class="week-head"><h3>Week ' + (w + 1) + '</h3><span class="range">' + fmtRange(a, a + 6 * DAY) + '</span>' +
+        (w === cur ? '<span class="pill now">This week</span>' : '') +
+        '<span class="spacer"></span><span class="tot">' + fmt(tot) + ' h</span></div><ul class="slots">';
+      ss.forEach(function (s) {
+        var c = CBY[s.cid];
+        out += '<li class="slot" style="--tc:var(--t-' + s.track + ')"><span class="tn">' + esc(TBY[s.track].name) + '</span><span class="ct">' + esc(c.title) + '</span><span class="mt">' + fmt(s.hours) + ' h · ' + Math.round(s.from) + '% → ' + Math.round(s.to) + '%</span></li>';
+      });
+      out += '</ul></article>';
+    }
+    if (!out) out = '<p class="sec-note">Nothing left to schedule. Every course is at 100%.</p>';
+    $('#weeks').innerHTML = out;
+    $('#toggleWeeks').textContent = showAll ? 'Show next 4 weeks' : 'Show all ' + n + ' weeks';
+    $('#toggleWeeks').hidden = n <= 4;
+  }
+
+  function renderCourses() {
+    var html = '';
+    TRACKS.forEach(function (t) {
+      var cs = COURSES.filter(function (c) { return c.track === t.id && isOn(c, state); }).sort(function (a, b) { return a.ord - b.ord; });
+      if (!cs.length) return;
+      var th = cs.reduce(function (s, c) { return s + planH(c, state); }, 0);
+      html += '<div class="track" style="--tc:var(--t-' + t.id + ')"><div class="track-head"><i class="dot"></i><h3>' + esc(t.name) + '</h3><span class="th-h">' + fmt(th) + ' h planned</span></div>';
+      cs.forEach(function (c) {
+        var p = Math.round(state.progress[c.id] || 0);
+        var links = (c.links || []).map(function (l) { return ' · <a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + ' ↗</a>'; }).join('');
+        html += '<div class="course' + (p >= 100 ? ' done' : '') + '" data-id="' + c.id + '"><div><div class="c-title">' + esc(c.title) +
+          (c.added ? '<span class="tag">Added</span>' : '') + (c.extra ? '<span class="tag alt">Optional</span>' : '') + '</div>' +
+          '<div class="c-meta">' + (c.est ? '~' : '') + fmt(c.hrs) + ' h · ' + esc(c.src) + links + '</div>' +
+          (c.why ? '<p class="c-why">' + esc(c.why) + '</p>' : '') + '</div>' +
+          '<div class="c-prog"><input type="range" min="0" max="100" step="5" value="' + p + '" id="p-' + c.id + '" aria-label="Progress: ' + esc(c.title) + '"><output for="p-' + c.id + '">' + p + '%</output></div></div>';
+      });
+      html += '</div>';
+    });
+    $('#courses').innerHTML = html;
+  }
+
+  function extrasHours() {
+    var h = 0;
+    COURSES.forEach(function (c) { if (c.extra && !(c.track === 'art3d' && state.noArt)) h += planH(c, state); });
+    return h;
+  }
+  function artHours() {
+    var h = 0;
+    COURSES.forEach(function (c) { if (c.track === 'art3d' && (!c.extra || state.extras)) h += planH(c, state); });
+    return h;
+  }
+  function syncControls() {
+    $('#f-start').value = state.start;
+    $('#f-hpw').value = String(state.hpw);
+    $('#f-mult').value = String(state.mult);
+    $('#f-ext').checked = state.extras;
+    $('#f-art').checked = state.noArt;
+    $('#l-ext').textContent = 'Add optional extras (+' + fmt(extrasHours()) + ' h)';
+    $('#l-art').textContent = 'A teammate handles 3D art (skip Blender' + (state.noArt ? '' : ', −' + fmt(artHours()) + ' h') + ')';
+  }
+  function renderPlanParts() { plan = buildPlan(state); syncControls(); renderStats(); renderMap(); renderWeeks(); }
+  function renderAll() { renderPlanParts(); renderCourses(); }
+
+  /* ---------- persistence ---------- */
+  var docRef = null, saveTimer = null, writing = false, dirty = false;
+  function setSave(t) { $('#saveState').textContent = t; }
+  function changed() {
+    try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {}
+    dirty = true; setSave('Saving…');
+    clearTimeout(saveTimer); saveTimer = setTimeout(flush, 700);
+  }
+  function flush() {
+    if (!docRef) { dirty = false; setSave('Saved on this device'); return; }
+    if (writing) { saveTimer = setTimeout(flush, 300); return; }
+    writing = true; dirty = false;
+    docRef.set(clone(state)).then(function () { writing = false; if (!dirty) setSave('Saved'); })
+      .catch(function () { writing = false; setSave('Kept in this browser only (cloud save unavailable)'); });
+  }
+  function initDb() {
+    try {
+      if (!IN_CLAUDE) return;
+      window.claude.use('db').then(function (db) {
+        if (!db) return;
+        docRef = db.doc('plan/state');
+        docRef.onSnapshot(function (snap) {
+          if (snap.metadata && snap.metadata.hasPendingWrites) return;
+          if (dirty || writing) return;
+          var d = snap.exists ? snap.data() : null;
+          if (!d) return;
+          var next = normalize(clone(d));
+          if (JSON.stringify(next) !== JSON.stringify(state)) { state = next; renderAll(); setSave('Loaded saved plan'); }
+        }, function () {});
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  /* ---------- events ---------- */
+  $('#f-start').addEventListener('change', function (e) { if (e.target.value) { state.start = e.target.value; changed(); renderPlanParts(); } });
+  $('#f-hpw').addEventListener('change', function (e) { state.hpw = +e.target.value; changed(); renderPlanParts(); });
+  $('#f-mult').addEventListener('change', function (e) { state.mult = +e.target.value; changed(); renderPlanParts(); renderCourses(); });
+  $('#f-ext').addEventListener('change', function (e) { state.extras = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
+  $('#f-art').addEventListener('change', function (e) { state.noArt = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
+  $('#toggleWeeks').addEventListener('click', function () { showAll = !showAll; renderWeeks(); });
+  $('#courses').addEventListener('input', function (e) {
+    if (e.target.type !== 'range') return;
+    var out = e.target.parentNode.querySelector('output'); if (out) out.textContent = e.target.value + '%';
+  });
+  $('#courses').addEventListener('change', function (e) {
+    if (e.target.type !== 'range') return;
+    var row = e.target.closest('.course'), id = row.getAttribute('data-id'), v = +e.target.value;
+    if (v > 0) state.progress[id] = v; else delete state.progress[id];
+    row.classList.toggle('done', v >= 100);
+    changed(); renderPlanParts();
+  });
+  $('#syncBtn').addEventListener('click', function () {
+    var link = location.href.split('#')[0] + '#s=' + b64enc(JSON.stringify(state));
+    var box = $('#linkBox'), inp = $('#linkInput');
+    inp.value = link; box.hidden = false;
+    var ok = function () { setSave('Sync link copied. Open it on your other device.'); };
+    var fail = function () { inp.focus(); inp.select(); setSave('Copy the link below.'); };
+    try { navigator.clipboard.writeText(link).then(ok, fail); } catch (e) { fail(); }
+  });
+
+  if (!IN_CLAUDE) $('#syncBtn').hidden = false;
+  renderAll();
+  setSave(importedFromLink ? 'Loaded progress from sync link' : (IN_CLAUDE ? '' : 'Saved on this device'));
+  initDb();
+  try {
+    if (!IN_CLAUDE && 'serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol)) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>
