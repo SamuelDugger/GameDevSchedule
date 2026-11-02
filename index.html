@@ -203,7 +203,6 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
         <option value="2">Slow and thorough (×2)</option>
       </select></div>
     <div class="field">
-      <label class="check" for="f-ext"><input type="checkbox" id="f-ext"><span id="l-ext">Add optional extras</span></label>
       <label class="check" for="f-art"><input type="checkbox" id="f-art"><span id="l-art">A teammate handles 3D art (skip Blender)</span></label>
     </div>
   </section>
@@ -228,14 +227,16 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     <div id="courses" class="tracks-grid"></div>
   </section>
 
+  <section class="sec" id="backlogSec">
+    <div class="sec-head"><h2>After the main plan</h2><span class="mono-label">tracked, scheduled once the main plan ends</span></div>
+    <p class="sec-note">These courses add polish rather than anything required to build a game, so they are not part of the main schedule or its dates. They get their own weeks after the main plan ends, one at a time. You can log hours on them the same way.</p>
+    <div id="backlog" class="tracks-grid"></div>
+  </section>
+
   <section class="sec">
     <details class="cut">
-      <summary>Cut from this plan (74.5 h of your courses)</summary>
+      <summary>Cut from this plan (31 h of your courses)</summary>
       <div class="cut-group"><b>2D courses: 31 h</b><p>Complete Godot 4 2D, Godot 4 2D Action-Adventure, and all three pixel art courses. These are 3D games. If the 3D course feels too fast at the start, do the first few hours of Godot 2D.</p></div>
-      <div class="cut-group"><b>Blender specialties: 25.5 h</b><p>Simulation Nodes, Isometric Scenes and Hard Surface Modelling. They add polish but are not needed to build a game.</p></div>
-      <div class="cut-group"><b>Anime Character Creator: 10.5 h</b><p>Character Creator for Video Games already covers the character pipeline.</p></div>
-      <div class="cut-group"><b>Music production: 7.5 h</b><p>Wait until you have a game that needs a soundtrack. SFX stays in the plan.</p></div>
-      <div class="cut-group"><b>Optional extras: 39.5 h</b><p>Low Poly Landscapes, Skill Builder Modelling Challenges, Geometry Nodes and Material Nodes Mastery. They are off by default. Turn on the extras switch to add them.</p></div>
       <div class="cut-group"><b>Also cut from my earlier plans</b><p>Git basics (you know them), Figma, Steam marketing, math part 4, the capstone game, the Grafit UI art course and the prototype spikes.</p></div>
     </details>
   </section>
@@ -285,15 +286,15 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     /* 3D art */
     own('b_start', 'art3d', 1, 'Get Started With Blender', 2, 'Two hours to get comfortable in the Blender interface.'),
     own('b_creator', 'art3d', 2, 'Complete Blender Creator 3: 3D Modelling for Beginners', 14, 'The full modelling foundation. Do it before the character course.'),
-    own('b_skill', 'art3d', 2.5, 'Blender Skill Builder: Modelling Challenges', 6.5, 'Extra modelling practice if you want more reps.', { extra: true }),
+    own('b_skill', 'art3d', 2.5, 'Blender Skill Builder: Modelling Challenges', 6.5, 'Extra modelling practice that applies Creator 3 before the character course.'),
     own('b_char', 'art3d', 3, 'Blender Character Creator for Video Games', 17, 'Game-ready characters and creatures. The core character art course.'),
     own('b_tex', 'art3d', 4, 'Blender Texture Painting: Stylized Models', 6.5, 'Stylized texture painting so models look finished.'),
     own('i_anim', 'art3d', 5, 'Blender Animation and Rigging', 8, 'Rigging and animation for characters and creatures.'),
     own('b_pipe', 'art3d', 6, 'From Blender to Godot: Game-Ready Assets, Characters and Animation', 3, 'Gets models, rigs and animations into Godot cleanly. Starts once you are about 60% through Godot 3D.', { after: [D('g_3d', 60)] }),
-    own('b_low', 'art3d', 6.5, 'Blender Low Poly Landscapes: Model Your Own Stylized Landscapes', 6, 'Stylized terrain and landscapes for open worlds and farms.', { extra: true }),
+    own('b_low', 'art3d', 6.5, 'Blender Low Poly Landscapes: Model Your Own Stylized Landscapes', 6, 'Stylized terrain and landscapes for open worlds and farms.'),
     own('b_env', 'art3d', 7, 'Blender Environment Artist: Create 3D Worlds', 14.5, 'Builds full 3D environments such as interiors, towns and farms.'),
-    own('i_mat', 'art3d', 8, 'Blender Material Nodes Mastery: Create Spectacular Textures', 16.5, 'Deeper material building for a polished stylized look.', { extra: true }),
-    own('i_geo', 'art3d', 9, 'Geometry Nodes in Blender 4: Create Complex 3D Models', 10.5, 'Procedural tools for scattering props and foliage.', { extra: true }),
+    own('i_mat', 'art3d', 8, 'Blender Material Nodes Mastery: Create Spectacular Textures', 16.5, 'Deeper material building for a polished stylized look.'),
+    own('i_geo', 'art3d', 9, 'Geometry Nodes in Blender 4: Create Complex 3D Models', 10.5, 'Procedural tools for scattering props and foliage.'),
     /* UI */
     add('u_db', 'ui', 1, 'Game UI Database: study inventory, shop and management menus', 2, 'Free', [L('Open', 'https://www.gameuidatabase.com/')], 'A free reference of tens of thousands of game screens. Collect examples before you design your own menus. Time is a rough guess.', { est: true }),
     add('u_godotui', 'ui', 2, 'Master Godot UI: Interfaces with Control Nodes (Udemy)', 4, 'Paid, about $20', [L('Open', 'https://comidoc.com/udemy/godot-ui')], 'Control nodes, containers and themes. Simulation and RPG games are menu-heavy. Udemy price varies, so check it. Starts once you are about 60% through Godot 3D.', { after: [D('g_3d', 60)] }),
@@ -304,12 +305,18 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     own('d_level', 'design', 3, 'Level Design Fundamentals', 4.5, 'Layout and flow for interiors and worlds.'),
     add('c_math1', 'design', 4, 'Math for Game Devs, Part 1: Vectors and Dot Product', 3, 'Free', [L('Open', 'https://classcentral.com/course/youtube-vectors-dot-product-math-for-game-devs-part-1-129127')], 'Vectors drive steering, aiming and distance falloff.'),
     /* Audio */
-    own('a_sfx', 'audio', 1, 'Game Audio Essentials: SFX and Sound Design', 6.5, 'Sound effects and sound design for creatures and interfaces.')
+    own('a_sfx', 'audio', 1, 'Game Audio Essentials: SFX and Sound Design', 6.5, 'Sound effects and sound design for creatures and interfaces.'),
+    own('a_music', 'audio', 2, 'Game Audio Essentials: Music Production for Video Games', 7.5, 'Composition and arrangement for game soundtracks. Starts after the Godot multiplayer course, so it lands in the middle of the plan.', { after: [D('g_multi')] }),
+    /* After the main plan */
+    own('b_anime', 'art3d', 1, 'Blender Anime Character Creator: Make 3D Anime Characters in Blender', 10.5, 'A stylized character variant. Best once the character pipeline feels familiar.', { backlog: true }),
+    own('i_hard', 'art3d', 2, 'Hard Surface Modelling in Blender', 7, 'Props, tools and machinery with clean edges.', { backlog: true }),
+    own('i_iso', 'art3d', 3, 'Blender Isometric Scenes: Craft Stunning Fantasy Worlds', 8, 'Compact stylized scenes. Good practice for composition and lighting.', { backlog: true }),
+    own('i_sim', 'art3d', 4, 'Blender 4.2 Simulation Nodes: Master Advanced Simulations', 10.5, 'Advanced procedural effects. The most specialized course on the list.', { backlog: true })
   ];
   var CBY = {}; COURSES.forEach(function (c) { CBY[c.id] = c; });
 
   /* ---------- state ---------- */
-  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, extras: false, noArt: false, progress: {}, base: {} };
+  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, noArt: false, progress: {}, base: {} };
   var LS = 'gdr-state-v2';
   var state = clone(DEFAULTS);
   var showAll = false, importedFromLink = false;
@@ -320,7 +327,6 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     if (typeof d.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.start)) s.start = d.start;
     if (+d.hpw >= 2 && +d.hpw <= 60) s.hpw = +d.hpw;
     if (+d.mult >= 1 && +d.mult <= 3) s.mult = +d.mult;
-    if (typeof d.extras === 'boolean') s.extras = d.extras;
     if (typeof d.noArt === 'boolean') s.noArt = d.noArt;
     if (d.progress && typeof d.progress === 'object') {
       Object.keys(d.progress).forEach(function (k) { var v = +d.progress[k]; if (CBY[k] && v >= 0 && v <= 100) s.progress[k] = v; });
@@ -343,14 +349,10 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   } catch (e) {}
 
   /* ---------- scheduling engine ---------- */
-  function isOn(c, st) {
-    if (c.extra && !st.extras) return false;
-    if (c.track === 'art3d' && st.noArt) return false;
-    return true;
-  }
+  function isOn(c, st) { return !(c.track === 'art3d' && st.noArt); }
   function planH(c, st) { return c.hrs * st.mult; }
 
-  function buildPlan(st) {
+  function buildPlan(st, backlog) {
     var blocks = [], left = st.hpw;
     while (left >= 2 - 1e-9) { blocks.push(2); left -= 2; }
     if (left > 1e-9) blocks.push(left);
@@ -358,9 +360,9 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     function nextBlock() { if (bp >= blocks.length) { wk++; bp = 0; } return { week: wk, len: blocks[bp++] }; }
 
     var pct = {};
-    COURSES.forEach(function (c) { pct[c.id] = isOn(c, st) ? Math.min(100, (st.base && st.base[c.id]) || 0) : 100; });
+    COURSES.forEach(function (c) { pct[c.id] = (isOn(c, st) && !!c.backlog === !!backlog) ? Math.min(100, (st.base && st.base[c.id]) || 0) : 100; });
     var tr = TIE.map(function (id) {
-      var q = COURSES.filter(function (c) { return c.track === id && isOn(c, st); })
+      var q = COURSES.filter(function (c) { return c.track === id && isOn(c, st) && !!c.backlog === !!backlog; })
         .sort(function (a, b) { return a.ord - b.ord; })
         .map(function (c) { var tot = planH(c, st); return { c: c, tot: tot, rem: tot * (1 - pct[c.id] / 100) }; })
         .filter(function (x) { return x.rem > EPS; });
@@ -413,6 +415,12 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     return { sessions: merged, nWeeks: n };
   }
 
+  function buildAll(st) {
+    var m = buildPlan(st, false), b = buildPlan(st, true);
+    b.sessions.forEach(function (s) { s.week += m.nWeeks; });
+    return { sessions: m.sessions, nWeeks: m.nWeeks, backlog: b.sessions, nBacklog: b.nWeeks, nAll: m.nWeeks + b.nWeeks };
+  }
+
   /* ---------- render ---------- */
   var plan = null;
   function startT() { return parseD(state.start); }
@@ -432,7 +440,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   }
 
   function renderStats() {
-    var on = COURSES.filter(function (c) { return isOn(c, state); });
+    var on = COURSES.filter(function (c) { return isOn(c, state) && !c.backlog; });
     var video = on.reduce(function (s, c) { return s + c.hrs; }, 0);
     var total = on.reduce(function (s, c) { return s + planH(c, state); }, 0);
     var cur = todayWeek(), schedPrev = 0, schedNow = 0, doneH = 0, allH = 0;
@@ -452,8 +460,12 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
       ['Planned time', fmt(total) + ' h', fmt(video) + ' h × ' + state.mult + ' · ' + fmt(doneH) + ' h done, ' + fmt(left) + ' h left'],
       ['Pace', pace, paceSub],
       ['Calendar', plan.nWeeks + ' weeks', '≈ ' + (plan.nWeeks / 4.345).toFixed(1) + ' months at ' + fmt(state.hpw) + ' h per week'],
-      ['Finish date', finish ? fmtD(finish) : '—', finish ? new Date(finish).getUTCFullYear() + ' · add buffer weeks for life' : 'Everything is done']
+      ['Finish date', finish ? fmtD(finish) : '—', finish ? new Date(finish).getUTCFullYear() + ' · main plan, add buffer weeks for life' : 'Main plan is done']
     ];
+    if (plan.nBacklog) {
+      var bh = plan.backlog.reduce(function (s, x) { return s + x.hours; }, 0);
+      tiles.push(['After main plan', '+' + plan.nBacklog + ' weeks', fmt(bh) + ' h of polish courses, ends ' + fmtD(weekStart(plan.nAll - 1) + 6 * DAY)]);
+    }
     $('#stats').innerHTML = tiles.map(function (t) {
       return '<div class="stat"><span class="mono-label">' + t[0] + '</span><span class="stat-val">' + t[1] + '</span><span class="stat-sub">' + t[2] + '</span></div>';
     }).join('');
@@ -482,11 +494,11 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   }
 
   function renderWeeks() {
-    var n = plan.nWeeks, cur = todayWeek();
+    var n = plan.nAll, cur = todayWeek();
     var first = Math.max(0, Math.min(cur, n - 1)), last = showAll ? n : Math.min(n, first + 4);
     var from = showAll ? 0 : first;
     var byWeek = {};
-    plan.sessions.forEach(function (s) { (byWeek[s.week] = byWeek[s.week] || []).push(s); });
+    plan.sessions.concat(plan.backlog).forEach(function (s) { (byWeek[s.week] = byWeek[s.week] || []).push(s); });
     var out = '';
     for (var w = from; w < last; w++) {
       var ss = byWeek[w] || [];
@@ -495,6 +507,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
       var a = weekStart(w);
       out += '<article class="panel week' + (w === cur ? ' now' : '') + '"><div class="week-head"><h3>Week ' + (w + 1) + '</h3><span class="range">' + fmtRange(a, a + 6 * DAY) + '</span>' +
         (w === cur ? '<span class="pill now">This week</span>' : '') +
+        (w >= plan.nWeeks ? '<span class="pill">After main plan</span>' : '') +
         '<span class="spacer"></span><span class="tot">' + fmt(doneW) + ' / ' + fmt(tot) + ' h done</span></div><ul class="slots">';
       ss.forEach(function (s) {
         var c = CBY[s.cid], f = sessionDone(s), fin = f >= 0.999, late = w < cur && !fin;
@@ -508,10 +521,10 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     $('#toggleWeeks').hidden = n <= 4;
   }
 
-  function renderCourses() {
+  function renderCourseGrid(sel, backlog) {
     var html = '';
     TRACKS.forEach(function (t) {
-      var cs = COURSES.filter(function (c) { return c.track === t.id && isOn(c, state); }).sort(function (a, b) { return a.ord - b.ord; });
+      var cs = COURSES.filter(function (c) { return c.track === t.id && isOn(c, state) && !!c.backlog === !!backlog; }).sort(function (a, b) { return a.ord - b.ord; });
       if (!cs.length) return;
       var th = cs.reduce(function (s, c) { return s + planH(c, state); }, 0);
       html += '<div class="track" style="--tc:var(--t-' + t.id + ')"><div class="track-head"><i class="dot"></i><h3>' + esc(t.name) + '</h3><span class="th-h">' + fmt(th) + ' h planned</span></div>';
@@ -519,7 +532,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
         var pr = state.progress[c.id] || 0, p = Math.round(pr);
         var links = (c.links || []).map(function (l) { return ' · <a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + ' ↗</a>'; }).join('');
         html += '<div class="course' + (p >= 100 ? ' done' : '') + '" data-id="' + c.id + '"><div><div class="c-title">' + esc(c.title) +
-          (c.added ? '<span class="tag">Added</span>' : '') + (c.extra ? '<span class="tag alt">Optional</span>' : '') + '</div>' +
+          (c.added ? '<span class="tag">Added</span>' : '') + (c.backlog ? '<span class="tag alt">After main plan</span>' : '') + '</div>' +
           '<div class="c-meta">' + (c.est ? '~' : '') + fmt(c.hrs) + ' h of video · ' + esc(c.src) + links + '</div>' +
           (c.why ? '<p class="c-why">' + esc(c.why) + '</p>' : '') + '</div>' +
           '<div class="c-ctl"><div class="c-prog"><input type="range" min="0" max="100" step="1" value="' + p + '" id="p-' + c.id + '" aria-label="Progress: ' + esc(c.title) + '"><output for="p-' + c.id + '">' + p + '%</output></div>' +
@@ -528,29 +541,27 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
       });
       html += '</div>';
     });
-    $('#courses').innerHTML = html;
+    $(sel).innerHTML = html;
+  }
+  function renderCourses() {
+    renderCourseGrid('#courses', false);
+    renderCourseGrid('#backlog', true);
+    $('#backlogSec').hidden = !$('#backlog').innerHTML;
   }
 
-  function extrasHours() {
-    var h = 0;
-    COURSES.forEach(function (c) { if (c.extra && !(c.track === 'art3d' && state.noArt)) h += planH(c, state); });
-    return h;
-  }
   function artHours() {
     var h = 0;
-    COURSES.forEach(function (c) { if (c.track === 'art3d' && (!c.extra || state.extras)) h += planH(c, state); });
+    COURSES.forEach(function (c) { if (c.track === 'art3d' && !c.backlog) h += planH(c, state); });
     return h;
   }
   function syncControls() {
     $('#f-start').value = state.start;
     $('#f-hpw').value = String(state.hpw);
     $('#f-mult').value = String(state.mult);
-    $('#f-ext').checked = state.extras;
     $('#f-art').checked = state.noArt;
-    $('#l-ext').textContent = 'Add optional extras (+' + fmt(extrasHours()) + ' h)';
     $('#l-art').textContent = 'A teammate handles 3D art (skip Blender' + (state.noArt ? '' : ', −' + fmt(artHours()) + ' h') + ')';
   }
-  function renderPlanParts() { plan = buildPlan(state); syncControls(); renderStats(); renderMap(); renderWeeks(); }
+  function renderPlanParts() { plan = buildAll(state); syncControls(); renderStats(); renderMap(); renderWeeks(); }
   function renderAll() { renderPlanParts(); renderCourses(); }
 
   /* ---------- persistence ---------- */
@@ -590,9 +601,9 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   $('#f-start').addEventListener('change', function (e) { if (e.target.value) { state.start = e.target.value; changed(); renderPlanParts(); } });
   $('#f-hpw').addEventListener('change', function (e) { state.hpw = +e.target.value; changed(); renderPlanParts(); });
   $('#f-mult').addEventListener('change', function (e) { state.mult = +e.target.value; changed(); renderPlanParts(); renderCourses(); });
-  $('#f-ext').addEventListener('change', function (e) { state.extras = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
   $('#f-art').addEventListener('change', function (e) { state.noArt = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
   $('#toggleWeeks').addEventListener('click', function () { showAll = !showAll; renderWeeks(); });
+  function onCourses(type, fn) { ['#courses', '#backlog'].forEach(function (s) { $(s).addEventListener(type, fn); }); }
   function setProgress(id, v, row) {
     v = Math.max(0, Math.min(100, Math.round(v * 10) / 10));
     if (v > 0) state.progress[id] = v; else delete state.progress[id];
@@ -608,20 +619,20 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     inp.value = '';
     setProgress(id, (state.progress[id] || 0) + h / planH(CBY[id], state) * 100, row);
   }
-  $('#courses').addEventListener('input', function (e) {
+  onCourses('input', function (e) {
     if (e.target.type !== 'range') return;
     var row = e.target.closest('.course'), id = row.getAttribute('data-id');
     row.querySelector('output').textContent = e.target.value + '%';
     row.querySelector('.c-hours').textContent = hoursText(CBY[id], +e.target.value);
   });
-  $('#courses').addEventListener('change', function (e) {
+  onCourses('change', function (e) {
     if (e.target.type !== 'range') return;
     var row = e.target.closest('.course'); setProgress(row.getAttribute('data-id'), +e.target.value, row);
   });
-  $('#courses').addEventListener('click', function (e) {
+  onCourses('click', function (e) {
     var b = e.target.closest('button[data-log]'); if (b) logHours(b.closest('.course'));
   });
-  $('#courses').addEventListener('keydown', function (e) {
+  onCourses('keydown', function (e) {
     if (e.key === 'Enter' && e.target.matches('.c-log input')) { e.preventDefault(); logHours(e.target.closest('.course')); }
   });
   var replanTimer = null;
