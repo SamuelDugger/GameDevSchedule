@@ -32,6 +32,7 @@
   --line: #d8dce4;
   --accent: #2a4fd4;
   --accent-soft: #e2e8fc;
+  --warn: #b36b00;
   --t-godot: #3b7fd4;
   --t-art3d: #e07a1f;
   --t-ui: #d9438e;
@@ -130,32 +131,41 @@ select, input[type="date"] {
 .week-head .spacer { flex: 1; }
 .week-head .tot { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-2); }
 .slots { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.slot { display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; border-left: 4px solid var(--tc); padding: 6px 0 6px 12px; background: color-mix(in srgb, var(--tc) 8%, var(--surface)); border-radius: 0 8px 8px 0; }
+.slot { display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; border-left: 4px solid var(--tc); padding: 6px 0 6px 12px; background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 28%, var(--surface)) var(--f, 0%), color-mix(in srgb, var(--tc) 8%, var(--surface)) var(--f, 0%)); border-radius: 0 8px 8px 0; }
 .slot .tn { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); }
 .slot .ct { min-width: 0; overflow-wrap: anywhere; }
 .slot .mt { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-2); padding-right: 10px; white-space: nowrap; }
+.slot.done .ct { color: var(--ink-2); }
+.slot.late .mt { color: var(--warn); }
 @media (max-width: 600px) {
   .slot { grid-template-columns: minmax(0, 1fr) auto; }
   .slot .tn { grid-column: 1 / -1; }
+  .slot .mt { white-space: normal; text-align: right; }
 }
 .btn { font: inherit; font-size: 0.88rem; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.sm { padding: 4px 10px; font-size: 0.8rem; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* courses */
 .tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 14px; }
 .track { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .track-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .track-head .th-h { margin-left: auto; font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); }
-.course { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 6px 14px; align-items: start; padding: 10px 0 10px 12px; border-left: 4px solid var(--tc); background: var(--surface); border-radius: 0 8px 8px 0; margin-bottom: 4px; }
+.course { display: grid; grid-template-columns: minmax(0, 1fr) 168px; gap: 6px 14px; align-items: start; padding: 10px 0 10px 12px; border-left: 4px solid var(--tc); background: var(--surface); border-radius: 0 8px 8px 0; margin-bottom: 4px; }
 .course.done .c-title { color: var(--ink-3); text-decoration: line-through; }
 .c-title { font-weight: 600; overflow-wrap: anywhere; }
 .c-meta { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); margin-top: 2px; overflow-wrap: anywhere; }
 .c-why { color: var(--ink-2); font-size: 0.86rem; margin-top: 4px; max-width: 60ch; }
 .tag { font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-left: 6px; vertical-align: 1px; display: inline-block; }
 .tag.alt { background: var(--surface-2); color: var(--ink-2); }
-.c-prog { display: flex; align-items: center; gap: 8px; padding-right: 10px; }
+.c-ctl { display: flex; flex-direction: column; gap: 6px; padding-right: 10px; min-width: 0; }
+.c-prog { display: flex; align-items: center; gap: 8px; }
 .c-prog input { flex: 1; min-width: 0; accent-color: var(--accent); }
-.c-prog output { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-2); width: 3.2ch; text-align: right; }
+.c-prog output { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-2); width: 3.6ch; text-align: right; }
+.c-hours { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-2); }
+.c-log { display: flex; gap: 6px; align-items: center; }
+.c-log input { width: 4.2rem; font: inherit; font-size: 0.85rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; min-width: 0; }
 @media (max-width: 460px) { .course { grid-template-columns: minmax(0, 1fr); } }
 
 /* cut list */
@@ -207,14 +217,14 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   </section>
 
   <section class="sec">
-    <div class="sec-head"><h2>Weekly plan</h2><button class="btn" id="toggleWeeks" type="button"></button></div>
-    <p class="sec-note">Hours are planned hours, including practice. Percentages are how far into each course you should be at the end of that block. Start each block with a 10-minute redo of the last lesson in that track.</p>
+    <div class="sec-head"><h2>Weekly plan</h2><div class="btn-row"><button class="btn" id="replanBtn" type="button">Re-plan from this week</button><button class="btn" id="toggleWeeks" type="button"></button></div></div>
+    <p class="sec-note">The schedule stays fixed. Each block fills in as you log hours, and shows hours done out of hours planned. Work ahead and later blocks fill in on their own. If you fall behind, press Re-plan from this week to rebuild the remaining work from today. Start each block with a 10-minute redo of the last lesson in that track.</p>
     <div class="weeks" id="weeks"></div>
   </section>
 
   <section class="sec">
-    <div class="sec-head"><h2>Courses and progress</h2><span class="mono-label">drag a slider as you go</span></div>
-    <p class="sec-note">Fell behind or finished something early? Move the sliders, set the start date to this Monday, and the schedule rebuilds from where you are. Items tagged Added are free or paid resources I found to fill gaps in your list.</p>
+    <div class="sec-head"><h2>Courses and progress</h2><span class="mono-label">log hours as you go</span></div>
+    <p class="sec-note">Type the hours you just worked into a course's Log box and press Log, or drag its slider for a rough set. Hours count as planned hours, so 3 hours logged is 3 hours done. Items tagged Added are free or paid resources I found to fill gaps in your list.</p>
     <div id="courses" class="tracks-grid"></div>
   </section>
 
@@ -299,7 +309,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   var CBY = {}; COURSES.forEach(function (c) { CBY[c.id] = c; });
 
   /* ---------- state ---------- */
-  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, extras: false, noArt: false, progress: {} };
+  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, extras: false, noArt: false, progress: {}, base: {} };
   var LS = 'gdr-state-v2';
   var state = clone(DEFAULTS);
   var showAll = false, importedFromLink = false;
@@ -314,6 +324,9 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     if (typeof d.noArt === 'boolean') s.noArt = d.noArt;
     if (d.progress && typeof d.progress === 'object') {
       Object.keys(d.progress).forEach(function (k) { var v = +d.progress[k]; if (CBY[k] && v >= 0 && v <= 100) s.progress[k] = v; });
+    }
+    if (d.base && typeof d.base === 'object') {
+      Object.keys(d.base).forEach(function (k) { var v = +d.base[k]; if (CBY[k] && v >= 0 && v <= 100) s.base[k] = v; });
     }
     return s;
   }
@@ -345,7 +358,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     function nextBlock() { if (bp >= blocks.length) { wk++; bp = 0; } return { week: wk, len: blocks[bp++] }; }
 
     var pct = {};
-    COURSES.forEach(function (c) { pct[c.id] = isOn(c, st) ? Math.min(100, st.progress[c.id] || 0) : 100; });
+    COURSES.forEach(function (c) { pct[c.id] = isOn(c, st) ? Math.min(100, (st.base && st.base[c.id]) || 0) : 100; });
     var tr = TIE.map(function (id) {
       var q = COURSES.filter(function (c) { return c.track === id && isOn(c, st); })
         .sort(function (a, b) { return a.ord - b.ord; })
@@ -409,15 +422,35 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     return Math.floor((t - startT()) / (7 * DAY));
   }
 
+  function sessionDone(s) {
+    var a = state.progress[s.cid] || 0, span = s.to - s.from;
+    return span > EPS ? Math.max(0, Math.min(1, (a - s.from) / span)) : 1;
+  }
+  function hoursText(c, pct) {
+    var t = planH(c, state);
+    return fmt(pct / 100 * t) + ' of ' + fmt(t) + ' h done';
+  }
+
   function renderStats() {
     var on = COURSES.filter(function (c) { return isOn(c, state); });
     var video = on.reduce(function (s, c) { return s + c.hrs; }, 0);
     var total = on.reduce(function (s, c) { return s + planH(c, state); }, 0);
-    var remaining = plan.sessions.reduce(function (s, x) { return s + x.hours; }, 0);
+    var cur = todayWeek(), schedPrev = 0, schedNow = 0, doneH = 0, allH = 0;
+    plan.sessions.forEach(function (x) {
+      allH += x.hours; doneH += sessionDone(x) * x.hours;
+      if (x.week < cur) schedPrev += x.hours;
+      if (x.week <= cur) schedNow += x.hours;
+    });
+    var left = Math.max(0, allH - doneH), pace, paceSub;
+    if (cur < 0 && doneH <= 0.5) { pace = 'Not started'; paceSub = 'Plan starts ' + fmtD(startT()); }
+    else if (doneH < schedPrev - 0.5) { pace = 'Behind ' + fmt(schedPrev - doneH) + ' h'; paceSub = 'Behind through last week. Try Re-plan from this week.'; }
+    else if (doneH > schedNow + 0.5) { pace = 'Ahead ' + fmt(doneH - schedNow) + ' h'; paceSub = 'Ahead of the plan so far'; }
+    else { pace = 'On track'; paceSub = fmt(Math.max(0, schedNow - doneH)) + ' h left in the plan so far'; }
     var finish = plan.nWeeks ? weekStart(plan.nWeeks - 1) + 6 * DAY : null;
     var tiles = [
       ['Course video', fmt(video) + ' h', on.length + ' courses in this plan'],
-      ['Planned time', fmt(total) + ' h', fmt(video) + ' h × ' + state.mult + ' · ' + fmt(remaining) + ' h left'],
+      ['Planned time', fmt(total) + ' h', fmt(video) + ' h × ' + state.mult + ' · ' + fmt(doneH) + ' h done, ' + fmt(left) + ' h left'],
+      ['Pace', pace, paceSub],
       ['Calendar', plan.nWeeks + ' weeks', '≈ ' + (plan.nWeeks / 4.345).toFixed(1) + ' months at ' + fmt(state.hpw) + ' h per week'],
       ['Finish date', finish ? fmtD(finish) : '—', finish ? new Date(finish).getUTCFullYear() + ' · add buffer weeks for life' : 'Everything is done']
     ];
@@ -458,13 +491,14 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     for (var w = from; w < last; w++) {
       var ss = byWeek[w] || [];
       var tot = ss.reduce(function (a, s) { return a + s.hours; }, 0);
+      var doneW = ss.reduce(function (a, s) { return a + sessionDone(s) * s.hours; }, 0);
       var a = weekStart(w);
       out += '<article class="panel week' + (w === cur ? ' now' : '') + '"><div class="week-head"><h3>Week ' + (w + 1) + '</h3><span class="range">' + fmtRange(a, a + 6 * DAY) + '</span>' +
         (w === cur ? '<span class="pill now">This week</span>' : '') +
-        '<span class="spacer"></span><span class="tot">' + fmt(tot) + ' h</span></div><ul class="slots">';
+        '<span class="spacer"></span><span class="tot">' + fmt(doneW) + ' / ' + fmt(tot) + ' h done</span></div><ul class="slots">';
       ss.forEach(function (s) {
-        var c = CBY[s.cid];
-        out += '<li class="slot" style="--tc:var(--t-' + s.track + ')"><span class="tn">' + esc(TBY[s.track].name) + '</span><span class="ct">' + esc(c.title) + '</span><span class="mt">' + fmt(s.hours) + ' h · ' + Math.round(s.from) + '% → ' + Math.round(s.to) + '%</span></li>';
+        var c = CBY[s.cid], f = sessionDone(s), fin = f >= 0.999, late = w < cur && !fin;
+        out += '<li class="slot' + (fin ? ' done' : '') + (late ? ' late' : '') + '" style="--tc:var(--t-' + s.track + ');--f:' + (f * 100).toFixed(1) + '%"><span class="tn">' + esc(TBY[s.track].name) + '</span><span class="ct">' + (fin ? '✓ ' : '') + esc(c.title) + '</span><span class="mt">' + fmt(f * s.hours) + ' / ' + fmt(s.hours) + ' h · ' + Math.round(s.from) + '% → ' + Math.round(s.to) + '%' + (late ? ' · behind' : '') + '</span></li>';
       });
       out += '</ul></article>';
     }
@@ -482,13 +516,15 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
       var th = cs.reduce(function (s, c) { return s + planH(c, state); }, 0);
       html += '<div class="track" style="--tc:var(--t-' + t.id + ')"><div class="track-head"><i class="dot"></i><h3>' + esc(t.name) + '</h3><span class="th-h">' + fmt(th) + ' h planned</span></div>';
       cs.forEach(function (c) {
-        var p = Math.round(state.progress[c.id] || 0);
+        var pr = state.progress[c.id] || 0, p = Math.round(pr);
         var links = (c.links || []).map(function (l) { return ' · <a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + ' ↗</a>'; }).join('');
         html += '<div class="course' + (p >= 100 ? ' done' : '') + '" data-id="' + c.id + '"><div><div class="c-title">' + esc(c.title) +
           (c.added ? '<span class="tag">Added</span>' : '') + (c.extra ? '<span class="tag alt">Optional</span>' : '') + '</div>' +
-          '<div class="c-meta">' + (c.est ? '~' : '') + fmt(c.hrs) + ' h · ' + esc(c.src) + links + '</div>' +
+          '<div class="c-meta">' + (c.est ? '~' : '') + fmt(c.hrs) + ' h of video · ' + esc(c.src) + links + '</div>' +
           (c.why ? '<p class="c-why">' + esc(c.why) + '</p>' : '') + '</div>' +
-          '<div class="c-prog"><input type="range" min="0" max="100" step="5" value="' + p + '" id="p-' + c.id + '" aria-label="Progress: ' + esc(c.title) + '"><output for="p-' + c.id + '">' + p + '%</output></div></div>';
+          '<div class="c-ctl"><div class="c-prog"><input type="range" min="0" max="100" step="1" value="' + p + '" id="p-' + c.id + '" aria-label="Progress: ' + esc(c.title) + '"><output for="p-' + c.id + '">' + p + '%</output></div>' +
+          '<div class="c-hours">' + hoursText(c, pr) + '</div>' +
+          '<div class="c-log"><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="hours" id="h-' + c.id + '" aria-label="Hours to log: ' + esc(c.title) + '"><button class="btn sm" type="button" data-log="' + c.id + '">Log</button></div></div></div>';
       });
       html += '</div>';
     });
@@ -557,15 +593,49 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   $('#f-ext').addEventListener('change', function (e) { state.extras = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
   $('#f-art').addEventListener('change', function (e) { state.noArt = e.target.checked; changed(); renderPlanParts(); renderCourses(); });
   $('#toggleWeeks').addEventListener('click', function () { showAll = !showAll; renderWeeks(); });
+  function setProgress(id, v, row) {
+    v = Math.max(0, Math.min(100, Math.round(v * 10) / 10));
+    if (v > 0) state.progress[id] = v; else delete state.progress[id];
+    row.classList.toggle('done', v >= 100);
+    row.querySelector('input[type=range]').value = v;
+    row.querySelector('output').textContent = Math.round(v) + '%';
+    row.querySelector('.c-hours').textContent = hoursText(CBY[id], v);
+    changed(); renderPlanParts();
+  }
+  function logHours(row) {
+    var id = row.getAttribute('data-id'), inp = row.querySelector('.c-log input'), h = parseFloat(inp.value);
+    if (!(h > 0)) return;
+    inp.value = '';
+    setProgress(id, (state.progress[id] || 0) + h / planH(CBY[id], state) * 100, row);
+  }
   $('#courses').addEventListener('input', function (e) {
     if (e.target.type !== 'range') return;
-    var out = e.target.parentNode.querySelector('output'); if (out) out.textContent = e.target.value + '%';
+    var row = e.target.closest('.course'), id = row.getAttribute('data-id');
+    row.querySelector('output').textContent = e.target.value + '%';
+    row.querySelector('.c-hours').textContent = hoursText(CBY[id], +e.target.value);
   });
   $('#courses').addEventListener('change', function (e) {
     if (e.target.type !== 'range') return;
-    var row = e.target.closest('.course'), id = row.getAttribute('data-id'), v = +e.target.value;
-    if (v > 0) state.progress[id] = v; else delete state.progress[id];
-    row.classList.toggle('done', v >= 100);
+    var row = e.target.closest('.course'); setProgress(row.getAttribute('data-id'), +e.target.value, row);
+  });
+  $('#courses').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-log]'); if (b) logHours(b.closest('.course'));
+  });
+  $('#courses').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.matches('.c-log input')) { e.preventDefault(); logHours(e.target.closest('.course')); }
+  });
+  var replanTimer = null;
+  $('#replanBtn').addEventListener('click', function (e) {
+    var b = e.currentTarget;
+    if (!b.dataset.armed) {
+      b.dataset.armed = '1'; b.textContent = 'Click again to confirm';
+      replanTimer = setTimeout(function () { delete b.dataset.armed; b.textContent = 'Re-plan from this week'; }, 4000);
+      return;
+    }
+    clearTimeout(replanTimer); delete b.dataset.armed; b.textContent = 'Re-plan from this week';
+    var d = new Date(), mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7));
+    state.start = mon.getFullYear() + '-' + String(mon.getMonth() + 1).padStart(2, '0') + '-' + String(mon.getDate()).padStart(2, '0');
+    state.base = clone(state.progress);
     changed(); renderPlanParts();
   });
   $('#syncBtn').addEventListener('click', function () {

@@ -1,5 +1,5 @@
 // Network first so edits show up right away; falls back to the cache when offline.
-var CACHE = 'gdr-v3';
+var CACHE = 'gdr-v4';
 var CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {
