@@ -137,6 +137,8 @@ select, input[type="date"] {
 .slot .mt { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-2); padding-right: 10px; white-space: nowrap; }
 .slot.done .ct { color: var(--ink-2); }
 .slot.late .mt { color: var(--warn); }
+.carry-head { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--warn); margin: 2px 0 6px; }
+.carry-head.ok { color: var(--ink-3); margin-top: 12px; }
 @media (max-width: 600px) {
   .slot { grid-template-columns: minmax(0, 1fr) auto; }
   .slot .tn { grid-column: 1 / -1; }
@@ -216,8 +218,8 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   </section>
 
   <section class="sec">
-    <div class="sec-head"><h2>Weekly plan</h2><div class="btn-row"><button class="btn" id="replanBtn" type="button">Re-plan from this week</button><button class="btn" id="toggleWeeks" type="button"></button></div></div>
-    <p class="sec-note">The schedule stays fixed. Each block fills in as you log hours, and shows hours done out of hours planned. Work ahead and later blocks fill in on their own. If you fall behind, press Re-plan from this week to rebuild the remaining work from today. Start each block with a 10-minute redo of the last lesson in that track.</p>
+    <div class="sec-head"><h2>Weekly plan</h2><div class="btn-row"><button class="btn" id="undoBtn" type="button" hidden>Undo re-plan</button><button class="btn" id="replanBtn" type="button">Re-plan from this week</button><button class="btn" id="toggleWeeks" type="button"></button></div></div>
+    <p class="sec-note">The schedule stays fixed. Each block fills in as you log hours, and shows hours done out of hours planned. Work ahead and later blocks fill in on their own. If you fall behind, the unfinished blocks from earlier weeks show at the top of this week under Carried over, so nothing is lost. Re-plan from this week is different: it rebuilds a fresh schedule from this Monday using only the work that is left, and it does not add up missed time. Undo re-plan reverses it. Start each block with a 10-minute redo of the last lesson in that track.</p>
     <div class="weeks" id="weeks"></div>
   </section>
 
@@ -316,7 +318,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
   var CBY = {}; COURSES.forEach(function (c) { CBY[c.id] = c; });
 
   /* ---------- state ---------- */
-  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, noArt: false, progress: {}, base: {} };
+  var DEFAULTS = { start: '2026-11-02', hpw: 17.5, mult: 1.25, noArt: false, progress: {}, base: {}, prev: null };
   var LS = 'gdr-state-v2';
   var state = clone(DEFAULTS);
   var showAll = false, importedFromLink = false;
@@ -333,6 +335,10 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     }
     if (d.base && typeof d.base === 'object') {
       Object.keys(d.base).forEach(function (k) { var v = +d.base[k]; if (CBY[k] && v >= 0 && v <= 100) s.base[k] = v; });
+    }
+    if (d.prev && typeof d.prev === 'object' && typeof d.prev.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.prev.start) && d.prev.base && typeof d.prev.base === 'object') {
+      s.prev = { start: d.prev.start, base: {} };
+      Object.keys(d.prev.base).forEach(function (k) { var v = +d.prev.base[k]; if (CBY[k] && v >= 0 && v <= 100) s.prev.base[k] = v; });
     }
     return s;
   }
@@ -451,7 +457,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     });
     var left = Math.max(0, allH - doneH), pace, paceSub;
     if (cur < 0 && doneH <= 0.5) { pace = 'Not started'; paceSub = 'Plan starts ' + fmtD(startT()); }
-    else if (doneH < schedPrev - 0.5) { pace = 'Behind ' + fmt(schedPrev - doneH) + ' h'; paceSub = 'Behind through last week. Try Re-plan from this week.'; }
+    else if (doneH < schedPrev - 0.5) { pace = 'Behind ' + fmt(schedPrev - doneH) + ' h'; paceSub = 'Behind through last week. The weekly plan lists it under Carried over.'; }
     else if (doneH > schedNow + 0.5) { pace = 'Ahead ' + fmt(doneH - schedNow) + ' h'; paceSub = 'Ahead of the plan so far'; }
     else { pace = 'On track'; paceSub = fmt(Math.max(0, schedNow - doneH)) + ' h left in the plan so far'; }
     var finish = plan.nWeeks ? weekStart(plan.nWeeks - 1) + 6 * DAY : null;
@@ -504,11 +510,20 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
       var ss = byWeek[w] || [];
       var tot = ss.reduce(function (a, s) { return a + s.hours; }, 0);
       var doneW = ss.reduce(function (a, s) { return a + sessionDone(s) * s.hours; }, 0);
-      var a = weekStart(w);
+      var a = weekStart(w), carryH = 0, carryHtml = '';
+      if (w === cur) {
+        var items = '';
+        for (var pw = 0; pw < cur; pw++) (byWeek[pw] || []).forEach(function (s) {
+          var f = sessionDone(s); if (f >= 0.999) return;
+          var rest = (1 - f) * s.hours; carryH += rest;
+          items += '<li class="slot late" style="--tc:var(--t-' + s.track + ');--f:' + (f * 100).toFixed(1) + '%"><span class="tn">' + esc(TBY[s.track].name) + '</span><span class="ct">' + esc(CBY[s.cid].title) + '</span><span class="mt">' + fmt(rest) + ' h left · from week ' + (s.week + 1) + '</span></li>';
+        });
+        if (items) carryHtml = '<p class="carry-head">Carried over from earlier weeks</p><ul class="slots">' + items + '</ul><p class="carry-head ok">Planned for this week</p>';
+      }
       out += '<article class="panel week' + (w === cur ? ' now' : '') + '"><div class="week-head"><h3>Week ' + (w + 1) + '</h3><span class="range">' + fmtRange(a, a + 6 * DAY) + '</span>' +
         (w === cur ? '<span class="pill now">This week</span>' : '') +
         (w >= plan.nWeeks ? '<span class="pill">After main plan</span>' : '') +
-        '<span class="spacer"></span><span class="tot">' + fmt(doneW) + ' / ' + fmt(tot) + ' h done</span></div><ul class="slots">';
+        '<span class="spacer"></span><span class="tot">' + fmt(doneW) + ' / ' + fmt(tot) + ' h done' + (carryH > 0.05 ? ' · +' + fmt(carryH) + ' h carried over' : '') + '</span></div>' + carryHtml + '<ul class="slots">';
       ss.forEach(function (s) {
         var c = CBY[s.cid], f = sessionDone(s), fin = f >= 0.999, late = w < cur && !fin;
         out += '<li class="slot' + (fin ? ' done' : '') + (late ? ' late' : '') + '" style="--tc:var(--t-' + s.track + ');--f:' + (f * 100).toFixed(1) + '%"><span class="tn">' + esc(TBY[s.track].name) + '</span><span class="ct">' + (fin ? '✓ ' : '') + esc(c.title) + '</span><span class="mt">' + fmt(f * s.hours) + ' / ' + fmt(s.hours) + ' h · ' + Math.round(s.from) + '% → ' + Math.round(s.to) + '%' + (late ? ' · behind' : '') + '</span></li>';
@@ -561,7 +576,10 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     $('#f-art').checked = state.noArt;
     $('#l-art').textContent = 'A teammate handles 3D art (skip Blender' + (state.noArt ? '' : ', −' + fmt(artHours()) + ' h') + ')';
   }
-  function renderPlanParts() { plan = buildAll(state); syncControls(); renderStats(); renderMap(); renderWeeks(); }
+  function renderPlanParts() {
+    plan = buildAll(state); syncControls(); renderStats(); renderMap(); renderWeeks();
+    $('#undoBtn').hidden = !(state.prev || Object.keys(state.base).length);
+  }
   function renderAll() { renderPlanParts(); renderCourses(); }
 
   /* ---------- persistence ---------- */
@@ -645,6 +663,7 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     }
     clearTimeout(replanTimer); delete b.dataset.armed; b.textContent = 'Re-plan from this week';
     var d = new Date(), mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7));
+    state.prev = { start: state.start, base: clone(state.base) };
     state.start = mon.getFullYear() + '-' + String(mon.getMonth() + 1).padStart(2, '0') + '-' + String(mon.getDate()).padStart(2, '0');
     state.base = clone(state.progress);
     changed(); renderPlanParts();
@@ -656,6 +675,21 @@ details.cut summary { cursor: pointer; font-family: var(--f-display); font-weigh
     var ok = function () { setSave('Sync link copied. Open it on your other device.'); };
     var fail = function () { inp.focus(); inp.select(); setSave('Copy the link below.'); };
     try { navigator.clipboard.writeText(link).then(ok, fail); } catch (e) { fail(); }
+  });
+
+  var undoTimer = null;
+  $('#undoBtn').addEventListener('click', function (e) {
+    var b = e.currentTarget;
+    if (!b.dataset.armed) {
+      b.dataset.armed = '1'; b.textContent = 'Click again to confirm';
+      undoTimer = setTimeout(function () { delete b.dataset.armed; b.textContent = 'Undo re-plan'; }, 4000);
+      return;
+    }
+    clearTimeout(undoTimer); delete b.dataset.armed; b.textContent = 'Undo re-plan';
+    if (state.prev) { state.start = state.prev.start; state.base = state.prev.base; }
+    else { state.start = DEFAULTS.start; state.base = {}; }
+    state.prev = null;
+    changed(); renderPlanParts();
   });
 
   if (!IN_CLAUDE) $('#syncBtn').hidden = false;
